@@ -9,6 +9,13 @@ __pycache__/
 .ruff_cache/
 .pytest_cache/
 
+# packaging
+dist/
+*.egg
+.eggs/
+build/
+*.egg-info/
+
 # environment
 env/
 venv/
