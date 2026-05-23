@@ -24,6 +24,11 @@ TABLES: Path = RESULTS / "tables"
 # load environment variables
 load_dotenv(ROOT / ".env")
 
+# resolve relative paths
+_credentials: Path = os.getenv("CREDENTIALS")
+if _credentials and not Path(_credentials).is_absolute():
+    os.environ["CREDENTIALS"] = str((ROOT / _credentials).resolve())
+
 # analysis window
 START: date = date(2020, 1, 1)
 RELEASE: date = date(2022, 11, 30)

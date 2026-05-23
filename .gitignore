@@ -36,7 +36,9 @@ Thumbs.db
 .env
 *.key
 .env.*
-credentials/
+credentials/*
+!.env.example
+!credentials/.gitkeep
 service-account*.json
 
 # data
