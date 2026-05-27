@@ -1,0 +1,137 @@
+# From Crowd Knowledge to AI-Assisted Development: A Longitudinal Semantic Analysis of Stack Overflow After 2020
+
+_Living draft of the final report. Updated as part of closing every atom of the research plan. Co-authored by Roham Koohestani, Aditya Patil, and Tomasz Soróbka for the Web Science and Engineering course at TU Delft._
+
+> **Style rule.** Academic but accessible. Use simple words where they work. Prefer direct active sentences over passive ones. Keep paragraphs short. Define a term the first time it appears.
+>
+> **Update rule.** Each atom is closed only when this file has been updated with: (a) any methodology decisions made, (b) any numbers or figures produced, (c) any caveats or threats to validity observed. No atom ships without touching the matching section here.
+
+---
+
+## Abstract
+
+_To be drafted near submission once results are stable. Should answer: what we set out to study, how we studied it, what we found, what it means._
+
+---
+
+## 1. Introduction
+
+### 1.1 Motivation
+
+_Why this work matters. Stack Overflow has been the public memory of software engineering for two decades. The arrival of ChatGPT in late 2022 changed how developers ask for help. We study what happened next._
+
+### 1.2 Problem Statement
+
+_The drop in Stack Overflow activity since late 2022 is widely observed, but the underlying shift is not just a decline. We frame it as an "AI verification tax": developers now bring harder, architectural, and AI-debugging problems to the human crowd, because AI handles the easy ones privately._
+
+### 1.3 Research Questions
+
+- **RQ1.** How have Stack Overflow activity levels, answer availability, and response speeds changed from 2020 onward?
+- **RQ2.** Has the difficulty and complexity of Stack Overflow questions increased since 2022, and does this reflect the verification tax?
+- **RQ3.** How has the distribution of topics and developer intent shifted since 2020?
+- **RQ4.** Which technical domains show the strongest changes, and does this highlight AI concept drift?
+
+### 1.4 Contributions
+
+_Filled at the end. Expected: a longitudinal empirical study with real numbers; a difficulty classifier with documented transfer behaviour; an extended topic taxonomy for the AI era; a per-domain comparison; a fully reproducible local pipeline._
+
+---
+
+## 2. Background and Related Work
+
+### 2.1 Stack Overflow as a Developer Knowledge Platform
+
+_Brief history. Structure of the data. Why it has been studied so much._
+
+### 2.2 Past Work on Developer Intent and Question Taxonomies
+
+_Barua et al. on topics and trends; Allamanis and Sutton on why, when, and what developers ask; Beyer et al.'s seven-category taxonomy that we build on; Wang et al. on developer interactions._
+
+### 2.3 Developer Behaviour in the Generative AI Era
+
+_Recent work on the impact of LLMs on Stack Overflow activity, including Da Silva et al.'s reliability and user-activity analyses. The 2025 Stack Overflow Developer Survey on AI usage and trust._
+
+---
+
+## 3. Data Collection
+
+### 3.1 Choice of Data Source
+
+_We initially planned to use the Stack Overflow public dataset on Google BigQuery. We discovered that the BigQuery snapshot was last refreshed on 2022-09-25, predating the ChatGPT release we wanted to study. We pivoted to the community-mirrored Stack Exchange data dump on Internet Archive (collection `stackexchange_20251231`, covering data through 2025-12-31)._
+
+### 3.2 Tables Used
+
+_The dump provides five tables relevant to our analysis: Posts (questions and answers), Users, Comments, PostLinks, Tags. Each arrives as a `.7z`-compressed XML file._
+
+### 3.3 Local Ingestion Pipeline
+
+_Tables are stored on an external SSD attached to the analysis machine. We extract one table at a time, then stream its XML through `lxml.iterparse` into pyarrow-written Parquet partitioned by `year_month`. Partitioning lets DuckDB skip irrelevant months during later queries. After each table is verified, the source `.7z` and `.xml` are deleted to reclaim SSD space._
+
+### 3.4 Definition of Interaction and Complexity Metrics
+
+_To be filled when metric definitions are finalised in Atom 3 and 4._
+
+### 3.5 Data Validation
+
+_Row counts per table, date coverage, posts-per-month series. Populated after Atom 2 step 9._
+
+---
+
+## 4. Data Analysis
+
+### 4.1 Activity Trends and Interaction Speeds (RQ1)
+
+_To be populated in Atom 3. Will include monthly volume of questions and answers, accepted-answer rate, time-to-first-answer (median and p90), and engagement signals (mean score, mean comment count). Each figure gets a draft caption here._
+
+### 4.2 Question Complexity and Difficulty (RQ2)
+
+_To be populated in Atoms 4 and 5. Atom 4 reports cheap lexical features (title length, body length, code block count, etc.). Atom 5 reports the CodeT5 + XGBoost difficulty classifier and its monthly Hard/Medium/Easy mix._
+
+### 4.3 Topic and Intent Distribution (RQ3)
+
+_To be populated in Atom 6. Reports the Beyer-et-al. seven-category taxonomy extended with two AI-era categories (Machine-Authored Discrepancy, Architectural Consensus), per-author labelling agreement, the chosen classifier, the monthly topic mix, and focused trajectories for the new categories._
+
+### 4.4 Tag-Group and Domain Comparison (RQ4)
+
+_To be populated in Atom 7. Replays metrics per technology group (legacy stable, fast-moving web, AI-native libraries) to test the concept-drift hypothesis._
+
+### 4.5 Temporal Statistics
+
+_To be populated in Atom 8. Reports structural-break tests at the ChatGPT cutoff, interrupted time-series regression on each key metric, and robustness reruns excluding the 2025-2026 confounded period._
+
+---
+
+## 5. Limitations and Threats to Validity
+
+_Living section — every atom appends here when new caveats appear._
+
+- **The BigQuery snapshot cutoff.** We attempted to use the Google-maintained BigQuery snapshot of Stack Overflow and discovered it ended on 2022-09-25. The pivot to the community dump introduces a different validity concern: the community-maintained release is not the official Stack Exchange release, and recent community-maintained dumps reportedly miss some posts from deleted users.
+- **Deleted-user gap.** Community-mirrored dumps may omit posts whose authors deleted their accounts. We will quantify the gap during ingestion if a measurement is feasible.
+- **Confounding platform events.** Stack Overflow opened opinion-based questions to all users in early 2026 and rolled out (then withdrew) a major site redesign between February and April 2026. These events likely shape user engagement during the late period of our window. All charts annotate these events; robustness analyses re-fit without that period.
+- **Selection bias.** Our data only reflects public developer activity. Private AI tool usage inside companies is invisible to us.
+- **Interaction metrics as proxies.** Time-to-first-answer and accepted-rate are practical signals, not direct measures of user success.
+
+---
+
+## 6. Conclusions
+
+_To be drafted near submission. Should summarise the findings against the four research questions, name the most surprising results, and point at reproducibility materials._
+
+---
+
+## 7. Reproducibility
+
+_All code, the dataset manifest with checksums, and figure provenance live under `results/` and the project repository. Anyone with the external dump archive `stackexchange_20251231` should be able to clone the repo, run the ingestion pipeline, and reproduce every number and figure in this report._
+
+---
+
+## References
+
+_Maintained in `results/citations.bib`. The list below is the human-readable form, expanded as citations accrue._
+
+1. Allamanis, M., & Sutton, C. (2013). Why, when, and what: analyzing Stack Overflow questions by topic, type, and code. _MSR 2013_.
+2. Barua, A., Thomas, S. W., & Hassan, A. E. (2014). What are developers talking about? An analysis of topics and trends in Stack Overflow. _Empirical Software Engineering_ 19(3).
+3. Beyer, S., Macho, C., Di Penta, M., & Pinzger, M. (2020). What kind of questions do developers ask on Stack Overflow? _Empirical Software Engineering_ 25(3).
+4. Da Silva, L., et al. (2025). LLMs and Stack Overflow discussions: reliability, impact, and user activity evolution. _Journal of Systems and Software_.
+5. Da Silva, L., Samhi, J., & Khomh, F. (2025). LLMs and Stack Overflow discussions: reliability, impact, and challenges. _Journal of Systems and Software_ 230.
+6. Wang, S., Lo, D., & Jiang, L. (2013). An empirical study on developer interactions in Stack Overflow. _Symposium on Applied Computing 2013_.
