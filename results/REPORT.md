@@ -57,7 +57,7 @@ _Recent work on the impact of LLMs on Stack Overflow activity, including Da Silv
 
 ### 3.1 Choice of Data Source
 
-_We initially planned to use the Stack Overflow public dataset on Google BigQuery. We discovered that the BigQuery snapshot was last refreshed on 2022-09-25, predating the ChatGPT release we wanted to study. We pivoted to the community-mirrored Stack Exchange data dump on Internet Archive (collection `stackexchange_20251231`, covering data through 2025-12-31)._
+_We initially planned to use the Stack Overflow public dataset on Google BigQuery. We discovered that the BigQuery snapshot was last refreshed on 2022-09-25, predating the ChatGPT release we wanted to study, so we changed data sources. A first attempt with the community-mirrored Stack Exchange dump on Internet Archive proved incomplete — the mirror's data ended in early 2024 despite later naming. We finally moved to the **official Stack Exchange data dump**, downloaded directly from a Stack Overflow profile's Data Dump settings page. This is the authoritative source, complete through the dump's stated cutoff date._
 
 ### 3.2 Tables Used
 
@@ -121,7 +121,13 @@ _To be drafted near submission. Should summarise the findings against the four r
 
 ## 7. Reproducibility
 
-_All code, the dataset manifest with checksums, and figure provenance live under `results/` and the project repository. Anyone with the external dump archive `stackexchange_20251231` should be able to clone the repo, run the ingestion pipeline, and reproduce every number and figure in this report._
+_The project supports two reproduction paths, and both are first-class:_
+
+_**Path A — Reproduce from scratch (public).** Any reviewer or researcher with their own copy of the Stack Overflow data dump (downloadable from a Stack Overflow user profile's Data Dump settings) can clone this repository, set `DATA_DUMP` to point at the dump location, and run `python -m source.pipeline`. The pipeline decompresses the archive, streams the XML through `lxml.iterparse`, and writes the same `year_month`-partitioned Parquet layout used to produce every number and figure in this report. SHA-256 checksums in `results/tables/manifest.yaml` let reviewers verify their dump bytes match the version we worked from._
+
+_**Path B — Team-internal fast path (private).** Co-authors fetch the materialised Parquet directly from a private Hugging Face dataset repo using `python -m source.cloud pull`, skipping the ~3-hour ingestion. This path is not public; external reproducers use Path A._
+
+_All code, the dataset manifest, the figure-to-script provenance, and the limitations checklist live under `results/` and the project repository. The pipeline is deterministic given the same dump bytes — a reviewer running Path A should produce identical Parquet row counts and downstream numbers._
 
 ---
 
