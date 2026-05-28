@@ -35,3 +35,7 @@ RELEASE: date = date(2022, 11, 30)
 # sampling parameters
 SAMPLES: int = 50_000
 SEED: int = 42
+
+# hugging face dataset identifiers
+HF_TOKEN: str | None = os.getenv("HF_TOKEN")
+HF_REPO_ID: str = os.getenv("HF_REPO_ID", "overflow-labs/dump")

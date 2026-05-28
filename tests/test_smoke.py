@@ -44,3 +44,12 @@ def test_data_dump_readable_when_set() -> None:
     assert os.access(
         constants.DATA_DUMP, os.R_OK
     ), f"DATA_DUMP Not Readable: {constants.DATA_DUMP}"
+
+
+def test_hf_repo_id_is_set() -> None:
+    assert isinstance(constants.HF_REPO_ID, str)
+    assert "/" in constants.HF_REPO_ID
+
+
+def test_hf_token_optional() -> None:
+    assert constants.HF_TOKEN is None or isinstance(constants.HF_TOKEN, str)
