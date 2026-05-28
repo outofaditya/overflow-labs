@@ -13,8 +13,24 @@ from source.dump import SCHEMAS, convert
 # initialize logger
 log = get_logger(__name__)
 
-ARCHIVE_TEMPLATE = "stackoverflow.com-{}.7z"
 TABLE_ORDER = ["Tags", "PostLinks", "Users", "Comments", "Posts"]
+TABLE_XML = {
+    "Tags": "Tags.xml",
+    "PostLinks": "PostLinks.xml",
+    "Users": "Users.xml",
+    "Comments": "Comments.xml",
+    "Posts": "Posts.xml",
+}
+
+
+# locate the single official dump in raw
+def _find_official_dump(raw: Path) -> Path:
+    candidates = sorted(raw.glob("*.7z"))
+    if not candidates:
+        raise RuntimeError(f"No .7z Found Under {raw}")
+    if len(candidates) > 1:
+        raise RuntimeError(f"Multiple .7z Under {raw}: {[c.name for c in candidates]}")
+    return candidates[0]
 
 
 # count total rows in all parquet partitions in an output dir
@@ -30,7 +46,8 @@ def ingest_table(table: str, *, keep_archives: bool = False) -> None:
         raise ValueError(f"Unknown table: {table}")
 
     raw = constants.RAW
-    archive = raw / ARCHIVE_TEMPLATE.format(table)
+    xml_filename = TABLE_XML[table]
+    xml_path = raw / xml_filename
     out_dir = constants.PROCESSED / table.lower()
     success_marker = out_dir / "_SUCCESS"
 
@@ -44,15 +61,17 @@ def ingest_table(table: str, *, keep_archives: bool = False) -> None:
             f"Partial Run? Delete {out_dir} And Retry."
         )
 
-    if not archive.is_file():
-        raise RuntimeError(f"[{table}] Archive Missing: {archive}")
-
     log.info("=" * 60)
     log.info("[%s] Starting Ingestion", table)
     log.info("=" * 60)
     start = time.monotonic()
 
-    xml_path = extract(archive, out_dir=raw)
+    # extract this table's xml from the official dump if not present
+    if not xml_path.is_file():
+        official = _find_official_dump(raw)
+        log.info("[%s] Extracting %s From %s", table, xml_filename, official.name)
+        extract(official, out_dir=raw, targets=[xml_filename])
+
     rows_written = convert(table, xml_path, out_dir)
     parquet_rows = _count_parquet_rows(out_dir)
     if parquet_rows != rows_written:
@@ -64,11 +83,10 @@ def ingest_table(table: str, *, keep_archives: bool = False) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     success_marker.touch()
 
+    # delete only the xml; the .7z stays until every table is done
     if not keep_archives:
         log.info("[%s] Removing %s", table, xml_path.name)
         xml_path.unlink()
-        log.info("[%s] Removing %s", table, archive.name)
-        archive.unlink()
 
     elapsed = time.monotonic() - start
     log.info("[%s] Done In %.1f S (%.1f Min)", table, elapsed, elapsed / 60)
@@ -79,6 +97,13 @@ def ingest_all(*, keep_archives: bool = False) -> None:
     total_start = time.monotonic()
     for table in TABLE_ORDER:
         ingest_table(table, keep_archives=keep_archives)
+
+    # remove the official archive only after every table succeeds
+    if not keep_archives:
+        official = _find_official_dump(constants.RAW)
+        log.info("All Tables Done. Removing %s", official.name)
+        official.unlink()
+
     elapsed = time.monotonic() - total_start
     log.info("All Tables Done In %.1f S (%.1f Min)", elapsed, elapsed / 60)
 

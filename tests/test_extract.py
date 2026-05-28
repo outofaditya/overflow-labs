@@ -50,3 +50,32 @@ def test_verify_xml_rejects_missing_row(tmp_path: Path) -> None:
     bad.write_bytes(b'<?xml version="1.0"?><posts></posts>')
     with pytest.raises(RuntimeError, match="No <row>"):
         _verify_xml(bad)
+
+
+def test_extract_with_targets_filters(tmp_path: Path) -> None:
+    posts = b'<?xml version="1.0"?><posts><row Id="1" /></posts>'
+    users = b'<?xml version="1.0"?><users><row Id="1" /></users>'
+    posts_path = tmp_path / "Posts.xml"
+    users_path = tmp_path / "Users.xml"
+    posts_path.write_bytes(posts)
+    users_path.write_bytes(users)
+    archive = tmp_path / "multi.7z"
+    with py7zr.SevenZipFile(archive, "w") as z:
+        z.write(posts_path, arcname="Posts.xml")
+        z.write(users_path, arcname="Users.xml")
+    posts_path.unlink()
+    users_path.unlink()
+
+    out = tmp_path / "out"
+    result = extract(archive, out_dir=out, targets=["Posts.xml"])
+
+    assert result.name == "Posts.xml"
+    assert (out / "Posts.xml").is_file()
+    assert not (out / "Users.xml").is_file()
+
+
+def test_extract_with_unknown_target_raises(tmp_path: Path) -> None:
+    xml = b'<?xml version="1.0"?><posts><row Id="1" /></posts>'
+    archive = _make_archive(tmp_path, xml, xml_name="Posts.xml")
+    with pytest.raises(RuntimeError, match="Not Found"):
+        extract(archive, out_dir=tmp_path / "out", targets=["DoesNotExist.xml"])
