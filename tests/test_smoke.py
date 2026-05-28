@@ -1,4 +1,7 @@
+import os
+import pytest
 import logging
+from pathlib import Path
 from datetime import date
 from source import constants
 from source.logger import get_logger
@@ -24,3 +27,20 @@ def test_logger_returns_logger_instance() -> None:
     log = get_logger("smoke")
     assert isinstance(log, logging.Logger)
     assert log.name == "smoke"
+
+
+def test_data_paths_have_expected_names() -> None:
+    assert constants.RAW.name == "raw"
+    assert constants.PROCESSED.name == "processed"
+    assert isinstance(constants.DATA, Path)
+
+
+def test_data_dump_readable_when_set() -> None:
+    if constants.DATA_DUMP is None:
+        pytest.skip("DATA_DUMP Not Configured in .env")
+    assert (
+        constants.DATA_DUMP.is_dir()
+    ), f"DATA_DUMP Does Not Exist: {constants.DATA_DUMP}"
+    assert os.access(
+        constants.DATA_DUMP, os.R_OK
+    ), f"DATA_DUMP Not Readable: {constants.DATA_DUMP}"

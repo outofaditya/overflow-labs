@@ -11,8 +11,15 @@ OPTIONS: Path = ROOT / "options"
 NOTEBOOKS: Path = ROOT / "notebooks"
 TESTS: Path = ROOT / "tests"
 
+# load environment variables
+load_dotenv(ROOT / ".env")
+
+# use configured external dump archive
+_external = os.getenv("DATA_DUMP")
+DATA_DUMP: Path | None = Path(_external).resolve() if _external else None
+
 # data paths
-DATA: Path = ROOT / "data"
+DATA: Path = DATA_DUMP if DATA_DUMP else ROOT / "data"
 RAW: Path = DATA / "raw"
 PROCESSED: Path = DATA / "processed"
 
@@ -20,9 +27,6 @@ PROCESSED: Path = DATA / "processed"
 RESULTS: Path = ROOT / "results"
 FIGURES: Path = RESULTS / "figures"
 TABLES: Path = RESULTS / "tables"
-
-# load environment variables
-load_dotenv(ROOT / ".env")
 
 # analysis window
 START: date = date(2020, 1, 1)
