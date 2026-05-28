@@ -24,19 +24,9 @@ TABLES: Path = RESULTS / "tables"
 # load environment variables
 load_dotenv(ROOT / ".env")
 
-# resolve relative paths
-_credentials: str | None = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-if _credentials and not Path(_credentials).is_absolute():
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str((ROOT / _credentials).resolve())
-
 # analysis window
 START: date = date(2020, 1, 1)
 RELEASE: date = date(2022, 11, 30)
-
-# bigquery window
-DATASET: str = "bigquery-public-data.stackoverflow"
-PROJECT: str | None = os.getenv("GCP_PROJECT")
-BILLING: int = 50 * 1024**3  # 50 GiB
 
 # sampling parameters
 SAMPLES: int = 50_000

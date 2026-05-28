@@ -27,10 +27,8 @@ source venv/bin/activate
 pip install --upgrade pip
 pip install -e ".[dev]"
 
-# configure credentials
+# create a local .env document
 cp .env.example .env
-# edit your credentials
-# place your token in credentials/service-account.json
 
 # run the test suite
 pytest -v
