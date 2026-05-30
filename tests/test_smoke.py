@@ -30,9 +30,17 @@ def test_logger_returns_logger_instance() -> None:
 
 
 def test_data_paths_have_expected_names() -> None:
+    if constants.DATA_DUMP is None:
+        pytest.skip("DATA_DUMP Not Set; Producer Paths Unavailable")
     assert constants.RAW.name == "raw"
     assert constants.PROCESSED.name == "processed"
     assert isinstance(constants.DATA, Path)
+
+
+def test_data_paths_are_optional_when_data_dump_unset() -> None:
+    assert constants.DATA is None or isinstance(constants.DATA, Path)
+    assert constants.RAW is None or isinstance(constants.RAW, Path)
+    assert constants.PROCESSED is None or isinstance(constants.PROCESSED, Path)
 
 
 def test_data_dump_readable_when_set() -> None:

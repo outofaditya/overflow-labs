@@ -19,9 +19,9 @@ _external = os.getenv("DATA_DUMP")
 DATA_DUMP: Path | None = Path(_external).resolve() if _external else None
 
 # data paths
-DATA: Path = DATA_DUMP if DATA_DUMP else ROOT / "data"
-RAW: Path = DATA / "raw"
-PROCESSED: Path = DATA / "processed"
+DATA: Path | None = DATA_DUMP
+RAW: Path | None = DATA_DUMP / "raw" if DATA_DUMP else None
+PROCESSED: Path | None = DATA_DUMP / "processed" if DATA_DUMP else None
 
 # results paths
 RESULTS: Path = ROOT / "results"

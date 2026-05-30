@@ -57,6 +57,14 @@ def test_push_to_hf_requires_processed_dir(
         push_to_hf()
 
 
+# fail fast when data_dump is unset (producer mode required for push)
+def test_push_to_hf_requires_data_dump_set(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(constants, "HF_TOKEN", "hf_test_xyz")
+    monkeypatch.setattr(constants, "PROCESSED", None)
+    with pytest.raises(RuntimeError, match=r"(?i)data_dump"):
+        push_to_hf()
+
+
 # verify pull calls snapshot_download with the right arguments
 def test_pull_from_hf_calls_snapshot_download(
     monkeypatch: pytest.MonkeyPatch,
