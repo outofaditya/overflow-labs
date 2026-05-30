@@ -1,0 +1,1 @@
+Median time from question creation to the asker marking an answer accepted, with the shaded band running up to the 90th percentile, per month, in hours (log scale). Tail-month counts are small because acceptance lags creation; interpret recent months with caution.

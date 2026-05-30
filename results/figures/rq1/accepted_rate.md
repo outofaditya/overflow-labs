@@ -1,0 +1,1 @@
+Per-month fraction of questions whose asker eventually marked an answer accepted. The tail months read artificially low because acceptance lags question creation by days to weeks; interpret the most recent ~6 months with caution.

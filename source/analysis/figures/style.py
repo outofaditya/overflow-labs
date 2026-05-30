@@ -4,16 +4,18 @@ import matplotlib as mpl
 from datetime import date
 from source import constants
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from matplotlib.patches import Patch
 
-# apple's classic color palette (used for simple, friendly visuals)
+# paul tol's bright palette: color-blind safe, designed for scientific publishing
 PALETTE = [
-    "#FC6255",
-    "#53BDEB",
-    "#FFC135",
-    "#A0E060",
-    "#AF52DE",
-    "#FFD3E2",
-    "#86868B",
+    "#4477AA",
+    "#EE6677",
+    "#228833",
+    "#CCBB44",
+    "#66CCEE",
+    "#AA3377",
+    "#BBBBBB",
 ]
 
 # acm figure widths
@@ -28,60 +30,87 @@ CHATGPT_RELEASE = date(2022, 11, 30)
 def apply() -> None:
     mpl.rcParams.update(
         {
-            # font: linux libertine matches the modern acmart class; serif fallbacks for portability
-            "font.family": "serif",
-            "font.serif": [
-                "Linux Libertine",
-                "STIX Two Text",
-                "Times New Roman",
-                "Times",
-                "serif",
+            # font: verdana is preinstalled on macos and windows; liberation sans on linux
+            "font.family": "sans-serif",
+            "font.sans-serif": [
+                "Verdana",
+                "DejaVu Sans",
+                "Liberation Sans",
+                "Arial",
+                "sans-serif",
             ],
             "font.size": 8,
-            "axes.titlesize": 9,
             "axes.labelsize": 8,
+            "axes.labelweight": "bold",
             "xtick.labelsize": 7,
             "ytick.labelsize": 7,
             "legend.fontsize": 7,
-            # axes look
-            "axes.spines.top": False,
-            "axes.spines.right": False,
+            "legend.frameon": False,
+            # axes look: thin border on all sides, spacious dashed grid on both axes
+            "axes.spines.top": True,
+            "axes.spines.right": True,
+            "axes.linewidth": 0.7,
+            "axes.edgecolor": "#222222",
+            "axes.axisbelow": True,
             "axes.grid": True,
-            "grid.alpha": 0.25,
-            "grid.linestyle": "--",
+            "axes.grid.axis": "both",
+            "grid.color": "#cccccc",
+            "grid.alpha": 0.9,
+            "grid.linestyle": (0, (4, 2)),
             "grid.linewidth": 0.5,
-            "lines.linewidth": 1.2,
+            # data lines
+            "lines.linewidth": 1.7,
+            "lines.solid_capstyle": "round",
             # figure
-            "figure.figsize": (ACM_COL_INCHES, 2.3),
-            "figure.dpi": 100,
+            "figure.figsize": (ACM_COL_INCHES, 2.4),
+            "figure.dpi": 110,
             "savefig.bbox": "tight",
             "savefig.format": "svg",
-            # color cycle
             "axes.prop_cycle": mpl.cycler(color=PALETTE),
         }
     )
+
+
+# year-only x-axis tick formatting
+def format_date_axis(ax: plt.Axes) -> None:
+    ax.xaxis.set_major_locator(mdates.YearLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
 
 
 # save the figure as svg under results/figures/<group>/<name>.svg
 def save_figure(fig: plt.Figure, name: str, group: str = "rq1") -> None:
     out_dir = constants.FIGURES / group
     out_dir.mkdir(parents=True, exist_ok=True)
-    out = out_dir / f"{name}.svg"
-    fig.savefig(out)
+    fig.savefig(out_dir / f"{name}.svg")
 
 
-# draw the chatgpt release vertical reference line and a small label
-def add_chatgpt_reference(ax: plt.Axes, label: str = "ChatGPT release") -> None:
+# draw the chatgpt release vertical reference line with a rotated label
+def add_chatgpt_reference(ax: plt.Axes, label: str = "GPT Release") -> None:
+    line_color = "#444444"
     ax.axvline(
-        CHATGPT_RELEASE, color="#666666", linestyle=":", linewidth=0.8, alpha=0.8
-    )
-    ymin, ymax = ax.get_ylim()
-    ax.text(
         CHATGPT_RELEASE,
-        ymax,
-        f" {label}",
-        fontsize=6,
+        color=line_color,
+        linestyle="--",
+        linewidth=0.8,
+        alpha=0.9,
+        zorder=2,
+    )
+    ax.annotate(
+        label,
+        xy=(CHATGPT_RELEASE, 0.97),
+        xycoords=("data", "axes fraction"),
+        xytext=(3, 0),
+        textcoords="offset points",
+        fontsize=7,
+        fontweight="medium",
         va="top",
         ha="left",
-        color="#666666",
+        rotation=90,
+        color=line_color,
+        zorder=3,
     )
+
+
+# build a square filled patch suitable as a legend handle (matches reference style)
+def legend_patch(color: str, label: str) -> Patch:
+    return Patch(facecolor=color, edgecolor="#222222", linewidth=0.7, label=label)
