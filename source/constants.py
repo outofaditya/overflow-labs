@@ -38,4 +38,4 @@ SEED: int = 42
 
 # hugging face dataset identifiers
 HF_TOKEN: str | None = os.getenv("HF_TOKEN")
-HF_REPO_ID: str = os.getenv("HF_REPO_ID", "overflow-labs/dump")
+HF_REPO_ID: str = os.getenv("HF_REPO_ID", "outofaditya/overflow-labs-dump")

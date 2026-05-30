@@ -125,7 +125,7 @@ _The project supports two reproduction paths, and both are first-class:_
 
 _**Path A — Reproduce from scratch (public).** Any reviewer or researcher with their own copy of the Stack Overflow data dump (downloadable from a Stack Overflow user profile's Data Dump settings) can clone this repository, set `DATA_DUMP` to point at the dump location, and run `python -m source.pipeline`. The pipeline decompresses the archive, streams the XML through `lxml.iterparse`, and writes the same `year_month`-partitioned Parquet layout used to produce every number and figure in this report. SHA-256 checksums in `results/tables/manifest.yaml` let reviewers verify their dump bytes match the version we worked from._
 
-_**Path B — Team-internal fast path (private).** Co-authors fetch the materialised Parquet directly from a private Hugging Face dataset repo using `python -m source.cloud pull`, skipping the ~3-hour ingestion. This path is not public; external reproducers use Path A._
+_**Path B — Team-internal fast path (private).** Co-authors fetch the materialised Parquet directly from the private Hugging Face dataset repo [outofaditya/overflow-labs-dump](https://huggingface.co/datasets/outofaditya/overflow-labs-dump) using `python -m source.cloud pull`, skipping the ~3-hour ingestion. The pull lands the parquet in the standard local HF cache; downstream code reads from there. This path is private to the team; external reproducers use Path A._
 
 _All code, the dataset manifest, the figure-to-script provenance, and the limitations checklist live under `results/` and the project repository. The pipeline is deterministic given the same dump bytes — a reviewer running Path A should produce identical Parquet row counts and downstream numbers._
 
