@@ -38,7 +38,7 @@ def push_to_hf() -> None:
     )
     api = HfApi(token=token)
     log.info("Uploading %s -> %s", constants.PROCESSED, constants.HF_REPO_ID)
-    api.upload_folder(
+    api.upload_large_folder(
         repo_type="dataset",
         repo_id=constants.HF_REPO_ID,
         ignore_patterns=IGNORE_PATTERNS,
