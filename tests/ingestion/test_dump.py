@@ -1,8 +1,8 @@
+import pytest
 from pathlib import Path
 import pyarrow.parquet as pq
-import pytest
 
-from source.dump import convert, _coerce_row, _partition_of
+from source.ingestion.dump import convert, _coerce_row, _partition_of
 
 _TAGS_XML = b"""<?xml version="1.0" encoding="utf-8"?>
 <tags>

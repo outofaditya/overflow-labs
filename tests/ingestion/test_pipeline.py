@@ -3,7 +3,7 @@ import pytest
 from pathlib import Path
 from source import constants
 import pyarrow.parquet as pq
-from source.pipeline import ingest_all, ingest_table
+from source.ingestion.pipeline import ingest_all, ingest_table
 
 
 # build a single multi-xml archive in the test raw dir

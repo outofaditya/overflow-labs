@@ -5,7 +5,7 @@ from pathlib import Path
 from source import constants
 import pyarrow.parquet as pq
 from unittest.mock import patch
-from source.query import _resolve_parquet_root, run_query
+from source.data.query import _resolve_parquet_root, run_query
 
 
 # build a tiny tags partition under root so duckdb has something to view
@@ -23,7 +23,7 @@ def _make_tags_partition(root: Path) -> None:
 def fake_parquet(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     _make_tags_partition(tmp_path)
     monkeypatch.setattr(constants, "PROCESSED", tmp_path)
-    import source.query as q
+    import source.data.query as q
 
     monkeypatch.setattr(q, "_conn", None)
     return tmp_path
@@ -37,7 +37,9 @@ def test_resolve_parquet_root_raises_when_neither_available(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(constants, "PROCESSED", None)
-    with patch("source.query.snapshot_download", side_effect=Exception("not cached")):
+    with patch(
+        "source.data.query.snapshot_download", side_effect=Exception("not cached")
+    ):
         with pytest.raises(RuntimeError, match=r"(?i)no parquet"):
             _resolve_parquet_root()
 

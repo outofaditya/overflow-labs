@@ -5,7 +5,7 @@ import pandas as pd
 from datetime import date
 from source import constants
 from source.logger import get_logger
-from source.query import _resolve_parquet_root, run_query
+from source.data.query import _resolve_parquet_root, run_query
 
 # initialize logger
 log = get_logger(__name__)

@@ -1,5 +1,5 @@
 import pytest
-from source.ingest import load_sql
+from source.data.loaders import load_sql
 
 
 # test loading the questions.sql file

@@ -3,8 +3,8 @@ from __future__ import annotations
 import pandas as pd
 from datetime import date
 from source import constants
-from source.query import run_query
 from source.logger import get_logger
+from source.data.query import run_query
 
 # initialize logger
 log = get_logger(__name__)

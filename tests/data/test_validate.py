@@ -6,9 +6,9 @@ import pyarrow.parquet as pq
 from datetime import date, datetime
 
 from source import constants
-from source.validate import (
-    questions_per_month,
+from source.data.validate import (
     summarize_table,
+    questions_per_month,
     write_validation_report,
 )
 
@@ -63,7 +63,7 @@ def fake_parquet(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         _make_stub(tmp_path, t)
     monkeypatch.setattr(constants, "PROCESSED", tmp_path)
     monkeypatch.setattr(constants, "START", date(2024, 1, 1))
-    import source.query as q
+    import source.data.query as q
 
     monkeypatch.setattr(q, "_conn", None)
     return tmp_path
@@ -105,7 +105,7 @@ def test_questions_per_month_detects_missing_months(
         _make_stub(tmp_path, t)
     monkeypatch.setattr(constants, "PROCESSED", tmp_path)
     monkeypatch.setattr(constants, "START", date(2024, 1, 1))
-    import source.query as q
+    import source.data.query as q
 
     monkeypatch.setattr(q, "_conn", None)
 

@@ -6,9 +6,9 @@ import argparse
 from pathlib import Path
 from source import constants
 import pyarrow.parquet as pq
-from source.extract import extract
+from source.ingestion.extract import extract
 from source.logger import get_logger
-from source.dump import SCHEMAS, convert
+from source.ingestion.dump import SCHEMAS, convert
 
 # initialize logger
 log = get_logger(__name__)

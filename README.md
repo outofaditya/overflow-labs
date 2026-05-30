@@ -4,10 +4,15 @@ A Study of How Developer Behavior Shifted in the Generative-AI Era
 
 ## Repository Structure
 
-- `source/` — Python Source (Importable + Testable)
+- `source/` — Python Source (Layered by Concern)
+  - `source/ingestion/` — Producer-Only Data Pipeline (Manifest, Extract, Dump, Pipeline)
+  - `source/data/` — Query Layer (DuckDB, SQL Slice Loaders, Validation)
+  - `source/analysis/` — Per-RQ Analyses (Metrics, Figures, Models)
+  - `source/cloud.py` — Hugging Face Sync (Push + Pull)
+  - `source/constants.py`, `source/logger.py` — Foundations
 - `commands/` — SQL Query Files (DuckDB Dialect)
+- `tests/` — Testing Suite (Mirrors `source/`)
 - `notebooks/` — Exploratory Analysis
-- `tests/` — Testing Suite
 - `results/` — Figures, Tables, and the Living Paper Draft (`REPORT.md`)
 - `options/` — YAML Configs (Tag Groups + Sampling Parameters + More)
 
@@ -46,7 +51,7 @@ For External Researchers Who Want to Regenerate the Parquet From Scratch.
 4. Run the Ingestion (Expect ~3 Hours, Dominated by Posts).
 
 ```bash
-python -m source.pipeline
+python -m source.ingestion.pipeline
 ```
 
 Result: Monthly-Partitioned Parquet Under `DATA_DUMP/processed/`.

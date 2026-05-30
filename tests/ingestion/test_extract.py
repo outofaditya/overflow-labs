@@ -1,7 +1,7 @@
 import py7zr
 import pytest
 from pathlib import Path
-from source.extract import _verify_xml, extract
+from source.ingestion.extract import _verify_xml, extract
 
 
 def _make_archive(tmp_path: Path, xml_bytes: bytes, xml_name: str = "test.xml") -> Path:

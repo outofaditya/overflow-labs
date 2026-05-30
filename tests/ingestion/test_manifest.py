@@ -1,5 +1,5 @@
 from pathlib import Path
-from source.manifest import sha256_of
+from source.ingestion.manifest import sha256_of
 
 
 def test_sha256_of_known_input(tmp_path: Path) -> None:

@@ -1,12 +1,12 @@
 import pytest
 import pandas as pd
 import pyarrow as pa
-import pyarrow.parquet as pq
 from pathlib import Path
+import pyarrow.parquet as pq
 from datetime import date, datetime, timedelta
 
 from source import constants
-from source.metrics import (
+from source.analysis.metrics import (
     monthly_accepted_rate,
     monthly_active_askers,
     monthly_answer_coverage,
@@ -45,7 +45,7 @@ def parquet_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     _write_stubs(tmp_path)
     monkeypatch.setattr(constants, "PROCESSED", tmp_path)
     monkeypatch.setattr(constants, "START", date(2024, 1, 1))
-    import source.query as q
+    import source.data.query as q
 
     monkeypatch.setattr(q, "_conn", None)
     return tmp_path
