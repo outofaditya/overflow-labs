@@ -57,23 +57,36 @@ _Recent work on the impact of LLMs on Stack Overflow activity, including Da Silv
 
 ### 3.1 Choice of Data Source
 
-_We initially planned to use the Stack Overflow public dataset on Google BigQuery. We discovered that the BigQuery snapshot was last refreshed on 2022-09-25, predating the ChatGPT release we wanted to study, so we changed data sources. A first attempt with the community-mirrored Stack Exchange dump on Internet Archive proved incomplete — the mirror's data ended in early 2024 despite later naming. We finally moved to the **official Stack Exchange data dump**, downloaded directly from a Stack Overflow profile's Data Dump settings page. This is the authoritative source, complete through the dump's stated cutoff date._
+_Our initial plan was to query the Stack Overflow public dataset hosted on Google BigQuery. We found that snapshot had last been refreshed on 2022-09-25, two months before the public release of ChatGPT — useless for a study whose core question is about the AI era. A first attempt with the community-mirrored Stack Exchange dump on Internet Archive (collection `stackexchange_20251231`) proved incomplete: its data ended in early 2024 despite the later naming. We finally moved to the **official Stack Exchange data dump**, downloaded directly from a Stack Overflow profile's Data Dump settings page. This is the authoritative source. Our copy covers all posts through **2026-03-31** (the dump's stated cutoff). The downloaded archive's SHA-256 fingerprint is recorded in `results/tables/manifest.yaml` so a reviewer can verify their dump bytes match ours._
 
 ### 3.2 Tables Used
 
-_The dump provides five tables relevant to our analysis: Posts (questions and answers), Users, Comments, PostLinks, Tags. Each arrives as a `.7z`-compressed XML file._
+_The official dump contains eight tables. We extract and convert the five relevant to our analysis: **Posts** (questions and answers in one table, distinguished by `PostTypeId`), **Users**, **Comments**, **PostLinks**, and **Tags**. The three we omit — **Badges**, **PostHistory**, **Votes** — do not bear on the present research questions, and skipping them saves both disk space and ingestion time._
 
 ### 3.3 Local Ingestion Pipeline
 
-_Tables are stored on an external SSD attached to the analysis machine. We extract one table at a time, then stream its XML through `lxml.iterparse` into pyarrow-written Parquet partitioned by `year_month`. Partitioning lets DuckDB skip irrelevant months during later queries. After each table is verified, the source `.7z` and `.xml` are deleted to reclaim SSD space._
+_We extract tables from the single official `.7z` archive on an external SSD, one table at a time. For each table we stream the inner XML through `lxml.iterparse` (constant-memory parsing) and write monthly-partitioned Parquet via `pyarrow.ParquetWriter`. The partition key is `year_month=YYYY-MM`, derived from each row's `CreationDate`; Tags has no useful date dimension and writes as a single file. After each table's Parquet is verified, we delete the source `.7z` and `.xml` to reclaim SSD space. The full pipeline runs in ~3 hours on a 2024 MacBook Air, dominated by the 60-million-row Posts table._
+
+_The materialised dataset is also hosted in a private Hugging Face dataset repository ([outofaditya/overflow-labs-dump](https://huggingface.co/datasets/outofaditya/overflow-labs-dump)) so co-authors can pull the parquet without re-running the ingestion. The repository README documents both reproduction paths in detail._
 
 ### 3.4 Definition of Interaction and Complexity Metrics
 
-_To be filled when metric definitions are finalised in Atom 3 and 4._
+_Metric definitions are formalised in later atoms — interaction speed and engagement metrics in the RQ1 atom, text complexity features in the RQ2 atoms. This section is updated as each is added._
 
 ### 3.5 Data Validation
 
-_Row counts per table, date coverage, posts-per-month series. Populated after Atom 2 step 9._
+_Validation outputs land under `results/tables/data_validation.csv` (per-table summary) and `results/tables/posts_per_month.csv` (monthly time series with gap markers). Per-table summary:_
+
+| Table     |            Rows | Partitions | First Date | Last Date  |
+| --------- | --------------: | ---------: | ---------- | ---------- |
+| Posts     |      60,349,494 |        213 | 2008-07-31 | 2026-03-31 |
+| Users     |      31,031,671 |        213 | 2008-07-31 | 2026-03-31 |
+| Comments  |      91,268,612 |        212 | 2008-08-01 | 2026-03-31 |
+| PostLinks |       6,523,169 |        192 | 2010-04-26 | 2026-03-31 |
+| Tags      |          65,941 |          1 | —          | —          |
+| **Total** | **189,238,887** |            |            |            |
+
+_The questions-per-month series spans **75 months** from January 2020 through March 2026 with **zero gaps** (no missing months in the analysis window). The headline trajectory is dramatic on its own: question volume fell from **146,664** in January 2020 to **2,033** in March 2026, a ~98% decline. This is the central RQ1 signal — the rest of the analysis quantifies and explains its shape._
 
 ---
 
