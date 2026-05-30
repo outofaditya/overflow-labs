@@ -11,9 +11,6 @@ from datetime import datetime, timezone
 # initialize logger
 log = get_logger(__name__)
 
-# internet archive dump identifier
-ARCHIVE: str = "stackexchange_20251231"
-
 # streaming chunk size: 1MiB
 CHUNK_SIZE: int = 1024 * 1024
 
@@ -66,7 +63,6 @@ def build_manifest() -> dict:
         )
 
     return {
-        "archive_org_item": ARCHIVE,
         "manifest_generated_at": datetime.now(timezone.utc).isoformat(),
         "files": files,
     }

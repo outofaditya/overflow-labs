@@ -18,50 +18,6 @@ from source.analysis.figures.style import (
 # initialize logger
 log = get_logger(__name__)
 
-CAPTIONS = {
-    "volume": (
-        "Monthly question and answer volume on Stack Overflow, January 2020 through "
-        "March 2026. Both series collapse after the public release of ChatGPT "
-        "(vertical reference line, November 30, 2022)."
-    ),
-    "active_askers": (
-        "Distinct non-anonymous askers per month. Anonymous (deleted-account) authors "
-        "are excluded. Compared against monthly question volume, the ratio of "
-        "questions-per-asker indicates whether participation has thinned or whether "
-        "remaining askers are simply asking fewer questions."
-    ),
-    "accepted_rate": (
-        "Per-month fraction of questions whose asker eventually marked an answer "
-        "accepted. The tail months read artificially low because acceptance lags "
-        "question creation by days to weeks; interpret the most recent ~6 months "
-        "with caution."
-    ),
-    "answer_coverage": (
-        "Per-month fraction of questions that received at least one answer. Distinct "
-        "from acceptance: a question can be covered (someone answered) without being "
-        "resolved (asker accepted). A widening gap between coverage and acceptance "
-        "indicates community responsiveness outpacing asker engagement."
-    ),
-    "time_to_first_answer": (
-        "Median time from question creation to its first answer, with the shaded band "
-        "running up to the 90th percentile, per month, in hours (log scale). A "
-        "widening band signals hard questions sitting longer while easy ones still "
-        "receive prompt replies."
-    ),
-    "time_to_acceptance": (
-        "Median time from question creation to the asker marking an answer accepted, "
-        "with the shaded band running up to the 90th percentile, per month, in hours "
-        "(log scale). Tail-month counts are small because acceptance lags creation; "
-        "interpret recent months with caution."
-    ),
-    "engagement": (
-        "Per-month mean question score (left) and mean comment count (right). Falling "
-        "means indicate platform decay; rising or steady means while volume drops "
-        "indicate the surviving questions are higher-quality or harder, consistent "
-        "with the AI verification-tax hypothesis."
-    ),
-}
-
 
 # load a metric csv and parse year_month into the first-of-month datetime
 def _load(filename: str) -> pd.DataFrame:
@@ -70,20 +26,12 @@ def _load(filename: str) -> pd.DataFrame:
     return df
 
 
-# write the caption sidecar next to the saved figure
-def _write_caption(name: str, group: str = "rq1") -> None:
-    out_dir = constants.FIGURES / group
-    out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / f"{name}.md").write_text(CAPTIONS[name].strip() + "\n")
-
-
-# decorate axes, save the figure, write the caption, close — every figure ends here
+# decorate axes, save the figure, close — every figure ends here
 def _finalize(fig: plt.Figure, name: str, *axes: plt.Axes) -> None:
     for ax in axes:
         format_date_axis(ax)
         add_chatgpt_reference(ax)
     save_figure(fig, name)
-    _write_caption(name)
     plt.close(fig)
 
 

@@ -1,1 +1,0 @@
-Per-month mean question score (left) and mean comment count (right). Falling means indicate platform decay; rising or steady means while volume drops indicate the surviving questions are higher-quality or harder, consistent with the AI verification-tax hypothesis.

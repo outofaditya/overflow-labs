@@ -1,1 +1,0 @@
-Per-month fraction of questions that received at least one answer. Distinct from acceptance: a question can be covered (someone answered) without being resolved (asker accepted). A widening gap between coverage and acceptance indicates community responsiveness outpacing asker engagement.

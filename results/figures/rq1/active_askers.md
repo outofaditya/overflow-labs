@@ -1,1 +1,0 @@
-Distinct non-anonymous askers per month. Anonymous (deleted-account) authors are excluded. Compared against monthly question volume, the ratio of questions-per-asker indicates whether participation has thinned or whether remaining askers are simply asking fewer questions.

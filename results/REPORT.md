@@ -94,7 +94,31 @@ _The questions-per-month series spans **75 months** from January 2020 through Ma
 
 ### 4.1 Activity Trends and Interaction Speeds (RQ1)
 
-_To be populated in Atom 3. Will include monthly volume of questions and answers, accepted-answer rate, time-to-first-answer (median and p90), and engagement signals (mean score, mean comment count). Each figure gets a draft caption here._
+_We track seven monthly time series from January 2020 through March 2026 (75 months), partitioned at the public release of ChatGPT on 2022-11-30 (35 pre-ChatGPT months, 40 post). Underlying CSVs sit under `results/tables/`; SVG figures sit under `results/figures/rq1/`. The vertical dashed reference line in every figure marks the cutoff. Where rates of resolution are reported (accepted-rate, acceptance time), the most recent six months are excluded from pre/post summaries because both metrics lag question creation; figures still display the full tail, dimmable by the `question_count` companion column._
+
+**Volume (`volume.svg`).** Question and answer volume on Stack Overflow has collapsed. Median monthly questions fell from **129,018 pre-ChatGPT to 29,682 post** (–77%). The two boundary months are even more striking: **146,664 questions in January 2020 versus 2,033 in March 2026, a –98.6% drop**. Answers track questions in lockstep — median 166,903 → 43,968 per month (–74%); 198,173 (Jan 2020) → 4,075 (Mar 2026, –97.9%). Both series begin sliding well before late 2022 (a slow pre-existing decline since the 2014 peak), but the slope steepens visibly after the reference line.
+
+**Active askers (`active_askers.svg`).** Distinct non-anonymous askers per month dropped from a pre-ChatGPT median of **90,649 to a post median of 25,130 (–72%)**. The participation drop is therefore _less severe_ than the question-volume drop: the asker base contracted by 72% while questions contracted by 77%. The questions-per-asker ratio fell modestly, from a pre-ChatGPT monthly median of **1.42 to 1.18 (–17%)**. Reading: the community shrank primarily because _fewer people are asking at all_, not because the surviving askers off-loaded most of their questions to AI. Both effects exist, but the participation collapse dominates.
+
+**Accepted-answer rate (`accepted_rate.svg`).** Pre-ChatGPT mean: **43.2%**. Post-ChatGPT mean (excluding the last six months for tail noise): **35.0%**. An 8-percentage-point decline. The most recent month sits even lower at ~29%, but that figure is small-denominator noise (acceptance lags creation by days to weeks).
+
+**Answer coverage rate (`answer_coverage.svg`).** Pre-ChatGPT mean: **80.9%**. Post-ChatGPT mean (excluding tail): **73.9%**. A 7-percentage-point decline. Critically, the coverage-versus-accepted gap — a candidate signal for "community keeps answering but askers stop coming back to accept" — stayed essentially **flat at 37.6% pre vs 38.8% post**. The data does _not_ support a decoupling story: when one falls, both fall together. The community is still about as willing to mark answers accepted, relative to how many it answers, as it has always been.
+
+**Time to first answer (`time_to_first_answer.svg`).** Median-of-monthly-medians **tripled, from 1.0 h pre to 3.5 h post** (×3.4). The p90-of-monthly-p90s grew from 129 h (~5.4 days) to 193 h (~8 days), a smaller ×1.5 increase. The _median climbed more than the tail_. This refines (and partly rebuts) the simplest verification-tax framing — it is not just hard questions sitting longer; _every_ question, including the median case, now takes substantially longer to get an answer. The whole answering pipeline is slower, not just its long tail.
+
+**Time to acceptance (`time_to_acceptance.svg`).** Same shape: median 1.0 h → 2.8 h (×2.9), p90 69 h → 116 h (×1.7). Resolution times tracked first-response times almost exactly. Again, the median moved more than the tail.
+
+**Engagement (`engagement.svg`).** Mean question score per month dropped from a pre-ChatGPT mean of **0.82 to a post mean of 0.61** (–25%). The headline values bookend it: Jan 2020 averaged 1.13 score per question, Mar 2026 averages 0.74. Mean comment count per question moved the opposite direction, slightly: **2.03 pre to 2.20 post** (+8%). Reading: surviving questions get marginally more discussion (perhaps because the rare hard question that does reach Stack Overflow attracts more back-and-forth) but they are _less popular_ on average. The verification-tax hypothesis predicts "fewer but higher-signal questions"; the data shows fewer-and-modestly-less-upvoted questions, with slightly more comments. The signal-quality story is mixed.
+
+**Headline reading.** The data supports a _structural shift_ in Stack Overflow's role, but with a more nuanced shape than a simple "AI handles easy, humans handle hard" narrative:
+
+1. **Volume collapse is the dominant fact** — ~98% reduction in monthly questions over the full window.
+2. **Participation contracted faster than per-user activity** — the asker base shrank 72% while questions-per-asker fell only 17%. The platform thinned because fewer people came, not primarily because each user offloaded most of their work to AI.
+3. **Resolution speed deteriorated uniformly** — median response and acceptance times both tripled, with the p90 growing less. The slowdown is platform-wide, not concentrated in the hard tail.
+4. **No coverage-acceptance decoupling** — the gap between "got any answer" and "got an accepted answer" is essentially unchanged, contradicting the "community answers but askers stop accepting" hypothesis.
+5. **Engagement is mixed** — fewer upvotes per question, more comments per question. Not a clean validation of the "surviving questions are higher quality" prediction.
+
+Atom 8 (`temporal-stats`) will apply formal structural-break tests (Chow, CUSUM) and interrupted time-series regression to each of these series to quantify whether the apparent shift at 2022-11-30 is statistically significant and to attribute the level change versus slope change.\_
 
 ### 4.2 Question Complexity and Difficulty (RQ2)
 

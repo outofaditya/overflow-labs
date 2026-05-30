@@ -1,1 +1,0 @@
-Median time from question creation to its first answer, with the shaded band running up to the 90th percentile, per month, in hours (log scale). A widening band signals hard questions sitting longer while easy ones still receive prompt replies.
