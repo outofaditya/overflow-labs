@@ -6,10 +6,7 @@ import pyarrow.parquet as pq
 from datetime import date, datetime, timedelta
 
 from source import constants
-from source.metrics.acceptance import (
-    monthly_time_to_acceptance,
-    write_acceptance_report,
-)
+from source.metrics import monthly_time_to_acceptance, write_acceptance_report
 
 
 # build a tiny posts partition with accepted-answer references

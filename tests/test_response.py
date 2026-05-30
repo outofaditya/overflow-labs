@@ -6,7 +6,7 @@ import pyarrow.parquet as pq
 from datetime import date, datetime, timedelta
 
 from source import constants
-from source.metrics.response import monthly_time_to_first_answer, write_response_report
+from source.metrics import monthly_time_to_first_answer, write_response_report
 
 
 # build a tiny posts partition with questions and matching answers

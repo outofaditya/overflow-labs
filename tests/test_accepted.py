@@ -6,7 +6,7 @@ from pathlib import Path
 from datetime import date, datetime
 
 from source import constants
-from source.metrics.accepted import monthly_accepted_rate, write_accepted_report
+from source.metrics import monthly_accepted_rate, write_accepted_report
 
 
 # build a tiny posts partition with mixed accepted and non-accepted questions

@@ -6,7 +6,7 @@ import pyarrow.parquet as pq
 from datetime import date, datetime
 
 from source import constants
-from source.metrics.volume import monthly_volume, write_volume_report
+from source.metrics import monthly_volume, write_volume_report
 
 
 # build a tiny posts partition with a mix of questions and answers

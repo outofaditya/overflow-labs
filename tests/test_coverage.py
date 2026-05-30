@@ -6,7 +6,7 @@ import pyarrow.parquet as pq
 from datetime import date, datetime
 
 from source import constants
-from source.metrics.coverage import monthly_answer_coverage, write_coverage_report
+from source.metrics import monthly_answer_coverage, write_coverage_report
 
 
 # build a tiny posts partition with mixed answered and unanswered questions

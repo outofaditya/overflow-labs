@@ -6,7 +6,7 @@ import pyarrow.parquet as pq
 from datetime import date, datetime
 
 from source import constants
-from source.metrics.askers import monthly_active_askers, write_askers_report
+from source.metrics import monthly_active_askers, write_askers_report
 
 
 # build a tiny posts partition with repeat askers and one anonymous question

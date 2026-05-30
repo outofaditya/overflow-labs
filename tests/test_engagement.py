@@ -6,7 +6,7 @@ from pathlib import Path
 from datetime import date, datetime
 
 from source import constants
-from source.metrics.engagement import monthly_engagement, write_engagement_report
+from source.metrics import monthly_engagement, write_engagement_report
 
 
 # build a tiny posts partition with varying scores and comment counts
