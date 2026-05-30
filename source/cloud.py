@@ -25,7 +25,7 @@ def _require_token() -> str:
 def push_to_hf() -> None:
     token = _require_token()
     if not constants.PROCESSED.is_dir():
-        raise RuntimeError("PROCESSED Directory Does Not Exist: {constants.PROCESSED}")
+        raise RuntimeError(f"PROCESSED Directory Does Not Exist: {constants.PROCESSED}")
     log.info("Pushing %s to Hugging Face", constants.PROCESSED)
 
     # create a repository if it doesn't exist

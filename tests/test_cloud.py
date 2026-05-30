@@ -27,6 +27,10 @@ def test_push_to_hf_calls_upload_folder(
     (processed / "tags").mkdir()
     (processed / "tags" / "data.parquet").write_bytes(b"stub")
 
+    monkeypatch.setattr(constants, "HF_TOKEN", "hf_test_xyz")
+    monkeypatch.setattr(constants, "HF_REPO_ID", "test/repo")
+    monkeypatch.setattr(constants, "PROCESSED", processed)
+
     fake_api = MagicMock()
     with (
         patch("source.cloud.HfApi", return_value=fake_api),
@@ -34,11 +38,20 @@ def test_push_to_hf_calls_upload_folder(
     ):
         push_to_hf()
 
+    mock_create.assert_called_once()
+    fake_api.upload_folder.assert_called_once()
+    kwargs = fake_api.upload_folder.call_args.kwargs
+    assert kwargs["folder_path"] == str(processed)
+    assert kwargs["repo_id"] == "test/repo"
+    assert kwargs["repo_type"] == "dataset"
+    assert ".DS_Store" in kwargs["ignore_patterns"]
+
 
 # fail fast when processed dir does not exist
 def test_push_to_hf_requires_processed_dir(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    monkeypatch.setattr(constants, "HF_TOKEN", "hf_test_xyz")
     monkeypatch.setattr(constants, "PROCESSED", tmp_path / "missing")
     with pytest.raises(RuntimeError, match=r"(?i)processed dir"):
         push_to_hf()
