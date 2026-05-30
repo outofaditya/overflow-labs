@@ -39,8 +39,8 @@ def test_push_to_hf_calls_upload_folder(
         push_to_hf()
 
     mock_create.assert_called_once()
-    fake_api.upload_folder.assert_called_once()
-    kwargs = fake_api.upload_folder.call_args.kwargs
+    fake_api.upload_large_folder.assert_called_once()
+    kwargs = fake_api.upload_large_folder.call_args.kwargs
     assert kwargs["folder_path"] == str(processed)
     assert kwargs["repo_id"] == "test/repo"
     assert kwargs["repo_type"] == "dataset"
