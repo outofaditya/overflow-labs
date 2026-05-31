@@ -69,9 +69,9 @@ def apply() -> None:
     )
 
 
-# year-only x-axis tick formatting
-def format_date_axis(ax: plt.Axes) -> None:
-    ax.xaxis.set_major_locator(mdates.YearLocator())
+# year-only x-axis tick formatting; step controls tick density (step=2 yields every other year)
+def format_date_axis(ax: plt.Axes, step: int = 1) -> None:
+    ax.xaxis.set_major_locator(mdates.YearLocator(step))
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
 
 
@@ -82,8 +82,10 @@ def save_figure(fig: plt.Figure, name: str, group: str = "one") -> None:
     fig.savefig(out_dir / f"{name}.svg")
 
 
-# draw the chatgpt release vertical reference line with a rotated label
-def add_chatgpt_reference(ax: plt.Axes, label: str = "GPT Release") -> None:
+# draw the chatgpt release vertical reference line; with_label=False draws only the line (for small-multiples panels)
+def add_chatgpt_reference(
+    ax: plt.Axes, label: str = "GPT Release", with_label: bool = True
+) -> None:
     ax.axvline(
         constants.RELEASE,
         color=REFERENCE_COLOR,
@@ -92,6 +94,8 @@ def add_chatgpt_reference(ax: plt.Axes, label: str = "GPT Release") -> None:
         alpha=0.9,
         zorder=2,
     )
+    if not with_label:
+        return
     ax.annotate(
         label,
         xy=(constants.RELEASE, 0.97),
