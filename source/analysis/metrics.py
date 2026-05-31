@@ -182,40 +182,17 @@ METRICS = {
 }
 
 
-# backward-compat wrappers used by the existing per-metric tests
-def write_volume_report() -> None:
-    write_csv(monthly_volume(), "monthly_volume.csv")
-
-
-def write_askers_report() -> None:
-    write_csv(monthly_active_askers(), "active_askers.csv")
-
-
-def write_accepted_report() -> None:
-    write_csv(monthly_accepted_rate(), "accepted_rate.csv")
-
-
-def write_coverage_report() -> None:
-    write_csv(monthly_answer_coverage(), "answer_coverage.csv")
-
-
-def write_response_report() -> None:
-    write_csv(monthly_time_to_first_answer(), "time_to_first_answer.csv")
-
-
-def write_acceptance_report() -> None:
-    write_csv(monthly_time_to_acceptance(), "time_to_acceptance.csv")
-
-
-def write_engagement_report() -> None:
-    write_csv(monthly_engagement(), "engagement.csv")
+# compute one metric and write its csv
+def write_metric(name: str) -> None:
+    compute_fn, filename = METRICS[name]
+    log.info("Computing %s", name)
+    write_csv(compute_fn(), filename)
 
 
 # compute every metric and write its csv
 def write_all() -> None:
-    for name, (compute_fn, filename) in METRICS.items():
-        log.info("Computing %s", name)
-        write_csv(compute_fn(), filename)
+    for name in METRICS:
+        write_metric(name)
 
 
 # main function

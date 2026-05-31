@@ -12,9 +12,7 @@ A Study of How Developer Behavior Shifted in the Generative-AI Era
   - `source/constants.py`, `source/logger.py` — Foundations
 - `commands/` — SQL Query Files (DuckDB Dialect)
 - `tests/` — Testing Suite (Mirrors `source/`)
-- `notebooks/` — Exploratory Analysis
 - `results/` — Figures, Tables, and the Living Paper Draft (`REPORT.md`)
-- `options/` — YAML Configs (Tag Groups + Sampling Parameters + More)
 
 ## Project Setup
 

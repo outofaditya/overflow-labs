@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import matplotlib as mpl
-from datetime import date
 from source import constants
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -22,11 +21,11 @@ PALETTE = [
 ACM_COL_INCHES = 3.33
 ACM_2COL_INCHES = 7.00
 
-# the chatgpt release used as a vertical reference line in every rq1 chart
-CHATGPT_RELEASE = date(2022, 11, 30)
+# shared chart colors used in multiple helpers
+EDGE_COLOR = "#222222"
+REFERENCE_COLOR = "#444444"
 
 
-# apply publication-grade matplotlib rcparams for the acm 2-column template
 def apply() -> None:
     mpl.rcParams.update(
         {
@@ -46,11 +45,10 @@ def apply() -> None:
             "ytick.labelsize": 7,
             "legend.fontsize": 7,
             "legend.frameon": False,
-            # axes look: thin border on all sides, spacious dashed grid on both axes
             "axes.spines.top": True,
             "axes.spines.right": True,
             "axes.linewidth": 0.7,
-            "axes.edgecolor": "#222222",
+            "axes.edgecolor": EDGE_COLOR,
             "axes.axisbelow": True,
             "axes.grid": True,
             "axes.grid.axis": "both",
@@ -78,7 +76,7 @@ def format_date_axis(ax: plt.Axes) -> None:
 
 
 # save the figure as svg under results/figures/<group>/<name>.svg
-def save_figure(fig: plt.Figure, name: str, group: str = "rq1") -> None:
+def save_figure(fig: plt.Figure, name: str, group: str = "one") -> None:
     out_dir = constants.FIGURES / group
     out_dir.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_dir / f"{name}.svg")
@@ -86,10 +84,9 @@ def save_figure(fig: plt.Figure, name: str, group: str = "rq1") -> None:
 
 # draw the chatgpt release vertical reference line with a rotated label
 def add_chatgpt_reference(ax: plt.Axes, label: str = "GPT Release") -> None:
-    line_color = "#444444"
     ax.axvline(
-        CHATGPT_RELEASE,
-        color=line_color,
+        constants.RELEASE,
+        color=REFERENCE_COLOR,
         linestyle="--",
         linewidth=0.8,
         alpha=0.9,
@@ -97,7 +94,7 @@ def add_chatgpt_reference(ax: plt.Axes, label: str = "GPT Release") -> None:
     )
     ax.annotate(
         label,
-        xy=(CHATGPT_RELEASE, 0.97),
+        xy=(constants.RELEASE, 0.97),
         xycoords=("data", "axes fraction"),
         xytext=(3, 0),
         textcoords="offset points",
@@ -106,11 +103,11 @@ def add_chatgpt_reference(ax: plt.Axes, label: str = "GPT Release") -> None:
         va="top",
         ha="left",
         rotation=90,
-        color=line_color,
+        color=REFERENCE_COLOR,
         zorder=3,
     )
 
 
-# build a square filled patch suitable as a legend handle (matches reference style)
+# build a square filled patch suitable as a legend handle
 def legend_patch(color: str, label: str) -> Patch:
-    return Patch(facecolor=color, edgecolor="#222222", linewidth=0.7, label=label)
+    return Patch(facecolor=color, edgecolor=EDGE_COLOR, linewidth=0.7, label=label)

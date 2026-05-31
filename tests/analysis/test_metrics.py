@@ -7,6 +7,7 @@ from datetime import date, datetime, timedelta
 
 from source import constants
 from source.analysis.metrics import (
+    METRICS,
     monthly_accepted_rate,
     monthly_active_askers,
     monthly_answer_coverage,
@@ -14,13 +15,7 @@ from source.analysis.metrics import (
     monthly_time_to_acceptance,
     monthly_time_to_first_answer,
     monthly_volume,
-    write_accepted_report,
-    write_acceptance_report,
-    write_askers_report,
-    write_coverage_report,
-    write_engagement_report,
-    write_response_report,
-    write_volume_report,
+    write_metric,
 )
 
 
@@ -263,59 +258,40 @@ def test_monthly_engagement_computes_means(parquet_root: Path) -> None:
     assert feb["mean_comments"] == pytest.approx(2.0)
 
 
-# parametrized writer test: every report function lands a csv with expected columns
-_WRITER_CASES = [
-    (
-        write_volume_report,
-        "monthly_volume.csv",
-        {"year_month", "question_count", "answer_count"},
-    ),
-    (
-        write_askers_report,
-        "active_askers.csv",
-        {"year_month", "distinct_askers"},
-    ),
-    (
-        write_accepted_report,
-        "accepted_rate.csv",
-        {"year_month", "question_count", "accepted_rate"},
-    ),
-    (
-        write_coverage_report,
-        "answer_coverage.csv",
-        {"year_month", "question_count", "coverage_rate"},
-    ),
-    (
-        write_response_report,
-        "time_to_first_answer.csv",
-        {"year_month", "answered_count", "median_seconds", "p90_seconds"},
-    ),
-    (
-        write_acceptance_report,
-        "time_to_acceptance.csv",
-        {"year_month", "accepted_count", "median_seconds", "p90_seconds"},
-    ),
-    (
-        write_engagement_report,
-        "engagement.csv",
-        {"year_month", "question_count", "mean_score", "mean_comments"},
-    ),
-]
+# expected columns per metric — iterated below alongside the METRICS registry
+_EXPECTED_COLUMNS = {
+    "monthly_volume": {"year_month", "question_count", "answer_count"},
+    "active_askers": {"year_month", "distinct_askers"},
+    "accepted_rate": {"year_month", "question_count", "accepted_rate"},
+    "answer_coverage": {"year_month", "question_count", "coverage_rate"},
+    "time_to_first_answer": {
+        "year_month",
+        "answered_count",
+        "median_seconds",
+        "p90_seconds",
+    },
+    "time_to_acceptance": {
+        "year_month",
+        "accepted_count",
+        "median_seconds",
+        "p90_seconds",
+    },
+    "engagement": {"year_month", "question_count", "mean_score", "mean_comments"},
+}
 
 
-@pytest.mark.parametrize("writer, filename, expected_columns", _WRITER_CASES)
+# parametrized writer test: every metric in the registry lands a csv with expected columns
+@pytest.mark.parametrize("name", list(METRICS))
 def test_writer_creates_csv_with_expected_columns(
     parquet_root: Path,
     monkeypatch: pytest.MonkeyPatch,
-    writer,
-    filename: str,
-    expected_columns: set[str],
+    name: str,
 ) -> None:
     _write_posts(parquet_root, _UNIVERSAL_POSTS)
     out_dir = parquet_root / "results_tables"
     monkeypatch.setattr(constants, "TABLES", out_dir)
-    writer()
-    written = out_dir / filename
+    write_metric(name)
+    written = out_dir / METRICS[name][1]
     assert written.is_file()
     df = pd.read_csv(written)
-    assert expected_columns.issubset(df.columns)
+    assert _EXPECTED_COLUMNS[name].issubset(df.columns)

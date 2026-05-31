@@ -6,13 +6,13 @@ from source import constants
 import matplotlib.pyplot as plt
 from source.logger import get_logger
 from source.analysis.figures.style import (
-    ACM_2COL_INCHES,
-    PALETTE,
-    add_chatgpt_reference,
     apply,
-    format_date_axis,
-    legend_patch,
+    PALETTE,
     save_figure,
+    legend_patch,
+    ACM_2COL_INCHES,
+    format_date_axis,
+    add_chatgpt_reference,
 )
 
 # initialize logger
@@ -173,7 +173,7 @@ def write_all() -> None:
     figure_time_to_first_answer()
     figure_time_to_acceptance()
     figure_engagement()
-    log.info("Done. Output: %s", constants.FIGURES / "rq1")
+    log.info("Done. Output: %s", constants.FIGURES / "one")
 
 
 # main function
