@@ -9,6 +9,7 @@ from source.logger import get_logger
 from source.data.query import run_query
 from source.analysis.parse import parse_body
 from source.analysis.metrics import write_csv
+from source.analysis.sampling import monthly_sample_plan
 
 # initialize logger
 log = get_logger(__name__)
@@ -40,11 +41,42 @@ def _features_for_row(title: str | None, body: str | None, tags: str | None) -> 
     }
 
 
+# get monthly question populations for the analysis window
+def _monthly_populations(start: date) -> dict[str, int]:
+    df = run_query(
+        """
+        SELECT
+            strftime(CreationDate, '%Y-%m') AS year_month,
+            COUNT(*) AS n
+        FROM posts
+        WHERE PostTypeId = 1 AND CreationDate >= $start_date
+        GROUP BY 1
+        ORDER BY 1
+        """,
+        params={"start_date": start},
+    )
+    return dict(zip(df["year_month"], df["n"]))
+
+
 # pull a stratified sample of questions and compute features per row
-def per_post_features(
-    start: date | None = None, sample_per_month: int = 1000
-) -> pd.DataFrame:
+def per_post_features(start: date | None = None) -> pd.DataFrame:
     start = start or constants.START
+
+    # power analysis: compute required sample per month
+    populations = _monthly_populations(start)
+    plan = monthly_sample_plan(
+        populations,
+        alpha=0.05,
+        power=0.95,
+        effect_size=0.2,
+        margin=0.02,
+        n_categories=len(FEATURES),
+    )
+    # use the maximum required n as the SQL cap; for smaller months the
+    # query naturally returns the full population (rn <= cap where N < cap)
+    cap = max(plan.values())
+    log.info("Sample cap per month: %d (power-analysis-based)", cap)
+
     posts = run_query(
         """
         WITH ranked AS (
@@ -62,10 +94,10 @@ def per_post_features(
         FROM ranked
         WHERE rn <= $cap
         """,
-        params={"start_date": start, "cap": sample_per_month},
+        params={"start_date": start, "cap": cap},
         max_rows=10_000_000,
     )
-    log.info("Computing Features for %d Questions", len(posts))
+    log.info("Computing features for %d questions", len(posts))
 
     records: list[dict] = []
     for row in posts.itertuples(index=False):
@@ -87,7 +119,9 @@ def monthly_distributions(per_post: pd.DataFrame) -> pd.DataFrame:
 
 # compute and persist the lex feature monthly distributions
 def write_features_report() -> None:
-    write_csv(monthly_distributions(per_post_features()), "lex_features.csv")
+    per_post = per_post_features()
+    write_csv(per_post, "post_features.csv")
+    write_csv(monthly_distributions(per_post), "lex_features.csv")
 
 
 # main function

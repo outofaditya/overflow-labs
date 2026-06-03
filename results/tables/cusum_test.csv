@@ -1,0 +1,10 @@
+cusum_max,cusum_max_month,critical_5pct,significant_5pct,metric
+12.1227,2023-03,8.2099,True,Question Volume
+12.3139,2023-03,8.2099,True,Answer Volume
+11.5756,2023-03,8.2099,True,Active Askers
+8.4785,2024-06,8.2099,True,Accepted Rate
+17.7769,2025-04,8.2099,True,Answer Coverage
+12.9377,2023-10,8.2099,True,Time to First Answer (med)
+14.4659,2021-04,8.2099,True,Time to Acceptance (med)
+16.6298,2025-05,8.2099,True,Mean Score
+11.8277,2022-01,8.2099,True,Mean Comments

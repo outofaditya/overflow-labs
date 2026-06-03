@@ -1,0 +1,10 @@
+f_statistic,p_value,df_numerator,df_denominator,breakpoint_month,metric
+12.9158,1.6e-05,2,71,2022-12,Question Volume
+11.8875,3.5e-05,2,71,2022-12,Answer Volume
+30.2735,0.0,2,71,2022-12,Active Askers
+4.8026,0.011061,2,71,2022-12,Accepted Rate
+14.8533,4e-06,2,71,2022-12,Answer Coverage
+32.2762,0.0,2,71,2022-12,Time to First Answer (med)
+80.4558,0.0,2,71,2022-12,Time to Acceptance (med)
+65.8648,0.0,2,71,2022-12,Mean Score
+37.764,0.0,2,71,2022-12,Mean Comments
